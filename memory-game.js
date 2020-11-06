@@ -22,7 +22,11 @@ const FOUND_MATCH_WAIT_MSECS = 1000;
 const COLORS = [ 'red', 'blue', 'green', 'orange', 'purple', 'red', 'blue', 'green', 'orange', 'purple' ];
 
 const colors = shuffle(COLORS);
-let flippedCards = [];
+const gameBoard = document.getElementById('game');
+let waitingPeriod = false;
+let isFlipped = false;
+let card1;
+let card2;
 
 createCards(colors);
 
@@ -52,34 +56,73 @@ function shuffle(items) {
  */
 
 function createCards(colors) {
-	const gameBoard = document.getElementById('game');
-
 	for (let color of colors) {
 		let container = document.createElement('div');
 		let blank = document.createElement('div');
 		let colored = document.createElement('div');
 		container.classList.add('cardContainer');
-		blank.classList.add('cards blankCard');
-		colored.classList.add(`cards ${color} hidden`);
+		blank.classList = 'cards blankCard';
+		colored.classList.add('cards', color, 'hidden');
 		container.append(blank, colored);
 		gameBoard.append(container);
 	}
 }
 
+//leave card face up
+
+function matchedCard() { // better verb
+	card1.parentElement.removeEventListener('click', handleCardClick);
+	card2.parentElement.removeEventListener('click', handleCardClick);
+}
+//handle if match
+
+function isMatch(c1, c2) {
+  console.log(c1, c2);
+  //add comment about what's been compared
+	if (c1.classList[1] === c2.classList[1]) {
+		//leave face up, remove evt listener
+		matchedCard();
+	
+	} else {
+    waitingPeriod = true;
+
+    setTimeout(() => {
+      unFlipCard();
+    }, 1000)
+	}
+}
+
 /** Flip a card face-up. */
 
-function flipCard(evt) {
-	if (evt.target.classList.includes('blankCard')) {
-		evt.target.classList.toggle(
-			`${evt.target.nextElementSibling.classList[0]} ${evt.target.nextElementSibling.classList[1]}`
-		);
+function flipCard(evt) { //limit to two flip
+	if (evt.target.classList.contains('blankCard')) {
+		evt.target.classList = `${evt.target.nextElementSibling.classList[0]} ${evt.target.nextElementSibling
+			.classList[1]}`;
+
+		if (!isFlipped) {
+			isFlipped = true;
+			card1 = evt.target;
+		} else {
+			isFlipped = false;
+      card2 = evt.target;
+      //prevent user from clicking third card
+    
+      isMatch(card1, card2);
+		}
 	}
 }
 
 /** Flip a card face-down. */
 
-function unFlipCard(evt) {
-	evt.target.classList.toggle('blankCard cards');
+function unFlipCard() {
+	// setTimeout(() => {
+    console.log(waitingPeriod);
+		card1.classList = 'cards blankCard';
+    card2.classList = 'cards blankCard';
+    waitingPeriod = false;
+
+  
+	// }, FOUND_MATCH_WAIT_MSECS);
 }
 
 /** Handle clicking on a card: this could be first-card or second-card. */
@@ -99,17 +142,7 @@ children.forEach((card) => {
 });
 
 function handleCardClick(evt) {
+  if(waitingPeriod) return;
 	flipCard(evt);
-
-	flippedCards.push(evt.target.classList[1]);
-
-	if (flippedCards.length === 2) {
-		if (flippedCards[0] === flippedCards[1]) {
-			return;
-		} else {
-			flippedCards = [];
-		}
-	}
-
-	setTimeout(unFlipCard(evt), FOUND_MATCH_WAIT_MSECS);
 }
+
