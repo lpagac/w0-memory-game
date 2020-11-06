@@ -46,3 +46,9 @@
 .purple {
   background-color: purple;
 }
+
+
+.outerCard {
+  position: relative;
+}
+

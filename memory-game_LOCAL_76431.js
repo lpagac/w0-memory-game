@@ -22,11 +22,8 @@ const FOUND_MATCH_WAIT_MSECS = 1000;
 const COLORS = [ 'red', 'blue', 'green', 'orange', 'purple', 'red', 'blue', 'green', 'orange', 'purple' ];
 
 const colors = shuffle(COLORS);
+let flippedCards = [];
 const gameBoard = document.getElementById('game');
-let waitingPeriod = false;
-let isFlipped = false;
-let card1;
-let card2;
 
 createCards(colors);
 
@@ -56,6 +53,7 @@ function shuffle(items) {
  */
 
 function createCards(colors) {
+
 	for (let color of colors) {
 		let container = document.createElement('div');
 		let blank = document.createElement('div');
@@ -68,62 +66,21 @@ function createCards(colors) {
 	}
 }
 
-//leave card face up
-
-function matchedCard() { // better verb
-	card1.parentElement.removeEventListener('click', handleCardClick);
-	card2.parentElement.removeEventListener('click', handleCardClick);
-}
-//handle if match
-
-function isMatch(c1, c2) {
-  console.log(c1, c2);
-  //add comment about what's been compared
-	if (c1.classList[1] === c2.classList[1]) {
-		//leave face up, remove evt listener
-		matchedCard();
-	
-	} else {
-    waitingPeriod = true;
-
-    setTimeout(() => {
-      unFlipCard();
-    }, 1000)
-	}
-}
-
 /** Flip a card face-up. */
 
-function flipCard(evt) { //limit to two flip
-	if (evt.target.classList.contains('blankCard')) {
-		evt.target.classList = `${evt.target.nextElementSibling.classList[0]} ${evt.target.nextElementSibling
-			.classList[1]}`;
-
-		if (!isFlipped) {
-			isFlipped = true;
-			card1 = evt.target;
-		} else {
-			isFlipped = false;
-      card2 = evt.target;
-      //prevent user from clicking third card
-    
-      isMatch(card1, card2);
-		}
+function flipCard(evt) {
+  let targetClassList = [...evt.target.classList]
+	if (targetClassList.includes('blankCard')) {
+		evt.target.classList = 
+			`${evt.target.nextElementSibling.classList[0]} ${evt.target.nextElementSibling.classList[1]}`;
 	}
 }
-
 /** Flip a card face-down. */
 
-function unFlipCard() {
-	// setTimeout(() => {
-    console.log(waitingPeriod);
-		card1.classList = 'cards blankCard';
-    card2.classList = 'cards blankCard';
-    waitingPeriod = false;
-
-  
-	// }, FOUND_MATCH_WAIT_MSECS);
-}
+//function unFlipCard(evt) {
+//  evt.classList.add('hidden');
+//  evt.nextElementSibling.classList.remove('hidden');
+//}
 
 /** Handle clicking on a card: this could be first-card or second-card. */
 // event listener for click and then flip card
@@ -142,7 +99,85 @@ children.forEach((card) => {
 });
 
 function handleCardClick(evt) {
-  if(waitingPeriod) return;
-	flipCard(evt);
+  flipCard(evt);
+  console.log('card to flip:', evt.target.classList);
+  console.log('target class list index 1: ', evt.target.classList[1]);
+  flippedCards.push(evt.target.classList[1]);
+  console.log('event target of click after flip:', evt.target);
+	setTimeout(function() {
+    if(flippedCards.includes(`${evt.target.classList[1]}`)) {
+      evt.target.classList = 'cards blankCard';
+    }
+  }, FOUND_MATCH_WAIT_MSECS);
+
+	if (flippedCards.length === 2) {
+		if (flippedCards[0] === flippedCards[1]) {
+			return;
+		} else {
+			flippedCards = [];
+		}
+  }
 }
 
+//function createCards(colors) {
+//	const gameBoard = document.getElementById('game');
+//
+//	for (let color of colors) {
+//		let container = document.createElement('div');
+//		let blank = document.createElement('div');
+//		let colored = document.createElement('div');
+//		container.classList.add('cardContainer');
+//		blank.classList.add('cards blankCard');
+//		colored.classList.add(`cards ${color} hidden`);
+//		container.append(blank, colored);
+//		gameBoard.append(container);
+//	}
+//}
+//
+///** Flip a card face-up. */
+//
+//function flipCard(evt) {
+//	if (evt.target.classList.includes('blankCard')) {
+//		evt.target.classList.toggle(
+//			`${evt.target.nextElementSibling.classList[0]} ${evt.target.nextElementSibling.classList[1]}`
+//		);
+//	}
+//}
+//
+///** Flip a card face-down. */
+//
+//function unFlipCard(evt) {
+//	evt.target.classList.toggle('blankCard cards');
+//}
+//
+///** Handle clicking on a card: this could be first-card or second-card. */
+//// event listener for click and then flip card
+//// push class color into global array
+//// if array length is 2 check if match
+//// if they are a match remove something to keep it from flipping
+//// else clear array
+//// settimeout and unflip after 1 sec
+//
+////click event listener
+//
+//let children = [ ...gameBoard.children ];
+//
+//children.forEach((card) => {
+//	card.addEventListener('click', handleCardClick);
+//});
+//
+//function handleCardClick(evt) {
+//	flipCard(evt);
+//
+//	flippedCards.push(evt.target.classList[1]);
+//
+//	if (flippedCards.length === 2) {
+//		if (flippedCards[0] === flippedCards[1]) {
+//			return;
+//		} else {
+//			flippedCards = [];
+//		}
+//	}
+//
+//	setTimeout(unFlipCard(evt), FOUND_MATCH_WAIT_MSECS);
+//}
