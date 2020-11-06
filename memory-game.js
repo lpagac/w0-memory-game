@@ -1,4 +1,20 @@
 "use strict";
+// create elements function
+// first create a container div
+// add a blank div as the base class for each card (card back)
+// add a card front div with a class of color name and a class for hidden
+// append both divs to container
+// append container div to board
+
+// flip card func
+// check if the event target is a blank class div 
+// if true then toggle the class of the div to its sibling color class inside of the container div
+// 
+
+// Set timeout will contain unflip func
+// unflip func
+// toggle the class of target element back to blank after one second
+// 
 
 /** Memory game: find matching pairs of cards and flip both of them. */
 
@@ -42,14 +58,23 @@ function createCards(colors) {
   const gameBoard = document.getElementById("game");
 
   for (let color of colors) {
-    // missing code here ...
+    let container = document.createElement('div');
+    let blank = document.createElement('div');
+    let colored = document.createElement('div');
+    container.classList.add('cardContainer');
+    blank.classList.add('cards blankCard');
+    colored.classList.add(`cards ${color} hidden`);
+    container.append(blank, colored);
+    gameBoard.append(container);
   }
 }
 
 /** Flip a card face-up. */
 
 function flipCard(card) {
-  // ... you need to write this ...
+  if(evt.target.classList.includes('blankCard')) {
+    evt.target.classList.toggle(`${evt.target.nextElementSibling.classList[0]} ${evt.target.nextElementSibling.classList[1]}`);
+  }
 }
 
 /** Flip a card face-down. */
@@ -59,7 +84,13 @@ function unFlipCard(card) {
 }
 
 /** Handle clicking on a card: this could be first-card or second-card. */
-
+// event listener for click and then flip card 
+// push class color into global array
+// if array length is 2 check if match
+// if they are a match remove something to keep it from flipping
+// else clear array
+// settimeout and unflip after 1 sec
 function handleCardClick(evt) {
   // ... you need to write this ...
+  
 }

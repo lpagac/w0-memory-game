@@ -1,9 +1,42 @@
 /* you can add to or change this. */
 
-#game div {
-  border: 1px solid black;
+
+.cardContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.cards {
   width: 100px;
   height: 100px;
   margin: 20px;
-  display: inline-block;
+}
+
+.hidden {
+  display: hidden;
+}
+
+.blankCard {
+  border: 1px solid black;
+  display: inline-block; 
+}
+
+.red {
+  background-color: red;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.green {
+  background-color: green;
+}
+
+.orange {
+  background-color: orange;
+}
+
+.purple {
+  background-color: purple;
 }
