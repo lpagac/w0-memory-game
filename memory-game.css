@@ -1,23 +1,29 @@
 /* you can add to or change this. */
 
-
-.cardContainer {
+#gameBoard {
   display: flex;
   flex-direction: row;
 }
 
+.cardContainer {
+  display: inline-block;
+}
+
 .cards {
+  top: 0;
+  left: 0;
   width: 100px;
   height: 100px;
   margin: 20px;
 }
 
 .hidden {
-  display: hidden;
+  display: none;
 }
 
+
 .blankCard {
-  border: 1px solid black;
+  border: 5px solid black;
   display: inline-block; 
 }
 
