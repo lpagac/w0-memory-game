@@ -1,5 +1,12 @@
 /* you can add to or change this. */
 
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
 #gameBoard {
   display: flex;
   flex-direction: row;

@@ -18,6 +18,7 @@
 
 /** Memory game: find matching pairs of cards and flip both of them. */
 
+
 const FOUND_MATCH_WAIT_MSECS = 1000;
 const COLORS = [ 'red', 'blue', 'green', 'orange', 'purple', 'red', 'blue', 'green', 'orange', 'purple' ];
 
@@ -27,6 +28,16 @@ let waitingPeriod = false;
 let isFlipped = false;
 let card1;
 let card2;
+let scoresCollector = [];
+let score = 0;
+let scoreBoard = document.querySelector('.score');
+let highScores = document.querySelector('.previousScores');
+
+window.addEventListener('load', function() {
+  scoresCollector = JSON.parse(localStorage.getItem('scores'));
+  highScores.innerText = scoresCollector;
+});
+
 
 createCards(colors);
 
@@ -79,9 +90,11 @@ function matchedCard() { // better verb
 function isMatch(c1, c2) {
   console.log(c1, c2);
   //add comment about what's been compared
-	if (c1.classList[1] === c2.classList[1]) {
+	if (c1.style.backgroundColor === c2.style.backgroundColor) {
 		//leave face up, remove evt listener
-		matchedCard();
+    matchedCard();
+    score+= 1;
+    scoreBoard.innerText = score;
 	
 	} else {
     waitingPeriod = true;
@@ -96,8 +109,9 @@ function isMatch(c1, c2) {
 
 function flipCard(evt) { //limit to two flip
 	if (evt.target.classList.contains('blankCard')) {
-		evt.target.classList = `${evt.target.nextElementSibling.classList[0]} ${evt.target.nextElementSibling
-			.classList[1]}`;
+    evt.target.style.backgroundColor = evt.target.nextElementSibling.classList[1];
+    //evt.target.classList = `${evt.target.nextElementSibling.classList[0]} ${evt.target.nextElementSibling
+			//.classList[1]}`;
 
 		if (!isFlipped) {
 			isFlipped = true;
@@ -117,8 +131,8 @@ function flipCard(evt) { //limit to two flip
 function unFlipCard() {
 	// setTimeout(() => {
     console.log(waitingPeriod);
-		card1.classList = 'cards blankCard';
-    card2.classList = 'cards blankCard';
+		card1.style.backgroundColor = '';
+    card2.style.backgroundColor = '';
     waitingPeriod = false;
 
   
@@ -137,9 +151,22 @@ function unFlipCard() {
 
 let children = [ ...gameBoard.children ];
 
-children.forEach((card) => {
+let startButton = document.querySelector('.start');
+let resetButtonForm = document.querySelector('form');
+
+startButton.addEventListener('click', gameStart);
+resetButtonForm.addEventListener('submit', function() {
+
+  scoresCollector.push(score);
+  localStorage.setItem('scores', JSON.stringify(scoresCollector));
+
+})
+
+function gameStart() {
+  children.forEach((card) => {
 	card.addEventListener('click', handleCardClick);
-});
+  });
+};
 
 function handleCardClick(evt) {
   if(waitingPeriod) return;
